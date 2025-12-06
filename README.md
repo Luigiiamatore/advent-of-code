@@ -25,7 +25,8 @@ The project is structured to separate logic from data:
 | 02  | [Gift Shop](https://adventofcode.com/2025/day/2)           |   ⭐    |   ⭐    |
 | 03  | [Lobby](https://adventofcode.com/2025/day/3)               |   ⭐    |   ⭐    |
 | 04  | [Printing Department](https://adventofcode.com/2025/day/4) |   ⭐    |   ⭐    |
-| 05  | [Cafeteria](https://adventofcode.com/2025/day/5)           |        |        |
+| 05  | [Cafeteria](https://adventofcode.com/2025/day/5)           |   ⭐    |   ⭐    |
+| 06  | [Trash Compactor](https://adventofcode.com/2025/day/6)     |        |        |
 
 ---
 *Created by [Luigi](https://github.com/Luigiiamatore)*
