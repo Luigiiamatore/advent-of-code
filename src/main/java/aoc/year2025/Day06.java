@@ -6,18 +6,21 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class Day06 extends Solution {
-    private final List<Problem> problems = new ArrayList<>();
-
     private static class Problem {
         List<Long> operands = new ArrayList<>();
         char operator;
 
         long operate() {
-            return switch (operator) {
-                case '+' -> operands.stream().reduce(0L, Long::sum);
-                case '*' -> operands.stream().reduce(1L, (a, b) -> a * b);
-                default -> -1;
-            };
+            if (operands.isEmpty()) return 0;
+
+            long result = (operator == '*' ? 1 : 0);
+            if (operator == '+') {
+                for (Long operand : operands) result += operand;
+            } else {
+                for (Long operand : operands) result *= operand;
+            }
+
+            return result;
         }
     }
 
@@ -27,34 +30,72 @@ public class Day06 extends Solution {
 
     @Override
     public Object part1() {
+        List<Problem> problems = new ArrayList<>();
+
         for (String line : input) {
+            if (line.isBlank()) continue;
+
             String[] tokens = line.trim().split("\\s+");
 
-            if (problems.isEmpty())
-                for (int i = 0; i < tokens.length; i++)
-                    problems.add(new Problem());
+            while (problems.size() < tokens.length) problems.add(new Problem());
 
             for (int i = 0; i < tokens.length; i++) {
                 String token = tokens[i];
-                Problem problem = problems.get(i);
+                char firstChar = token.charAt(0);
 
-                if (token.equals("+") || token.equals("*"))
-                    problem.operator = token.charAt(0);
-                else
-                    problem.operands.add(Long.parseLong(token));
+                if (firstChar == '+' || firstChar == '*') problems.get(i).operator = token.charAt(0);
+                else problems.get(i).operands.add(Long.parseLong(token));
             }
         }
 
         long sum = 0;
-        for (Problem problem : problems) {
-            sum += problem.operate();
-        }
+        for (Problem problem : problems) sum += problem.operate();
         return sum;
     }
 
     @Override
     public Object part2() {
-        return null;
+        int height = input.size();
+        int width = 0;
+        for (String s : input)
+            if (s.length() > width) width = s.length();
+
+        List<Problem> problems = new ArrayList<>();
+        Problem currentProblem = new Problem();
+        boolean inBlock = false;
+
+        for (int col = 0; col < width; col++) {
+            StringBuilder numberBuilder = new StringBuilder();
+            boolean isSpaceColumn = true;
+            Character foundOperator = null;
+
+            for (int row = 0; row < height; row++) {
+                if (col >= input.get(row).length()) continue;
+
+                char c = input.get(row).charAt(col);
+
+                if (c != ' ') {
+                    isSpaceColumn = false;
+                    if (c == '+' || c == '*') foundOperator = c;
+                    else if (Character.isDigit(c)) numberBuilder.append(c);
+                }
+            }
+
+            if (isSpaceColumn) {
+                if (inBlock) {
+                    problems.add(currentProblem);
+                    currentProblem = new Problem();
+                    inBlock = false;
+                }
+            } else {
+                inBlock = true;
+                if (foundOperator != null) currentProblem.operator = foundOperator;
+                if (!numberBuilder.isEmpty()) currentProblem.operands.add(Long.parseLong(numberBuilder.toString()));
+            }
+        }
+        if (inBlock) problems.add(currentProblem);
+
+        return problems.stream().mapToLong(Problem::operate).sum();
     }
 
     static void main() {
